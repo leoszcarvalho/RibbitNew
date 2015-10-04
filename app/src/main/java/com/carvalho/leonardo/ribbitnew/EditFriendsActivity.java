@@ -63,6 +63,9 @@ public class EditFriendsActivity extends AppCompatActivity {
         super.onResume();
 
         mCurrentUser = ParseUser.getCurrentUser();
+
+        Log.d("user", String.valueOf(mCurrentUser));
+
         mFriendsRelation = mCurrentUser.getRelation(ParseConstants.KEY_FRIENDS_RELATION);
 
 

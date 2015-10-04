@@ -18,4 +18,13 @@
     <string name="empty_friends">Add Friends to Begin</string>
     <string name="action_friends_edit_menu_text">Edit Friends</string>
     <string name="title_activity_edit_friends">Edit Friends</string>
+    <string name="action_camera_text">Camera</string>
+    <string name="external_storage_unavailable">There was a problem accessing your device\'s external storage.</string>
+    <string-array name="camera_choices">
+        <item>Take Picture</item>
+        <item>Take Video</item>
+        <item>Choose Picture</item>
+        <item>Choose Video</item>
+    </string-array>
+
 </resources>
