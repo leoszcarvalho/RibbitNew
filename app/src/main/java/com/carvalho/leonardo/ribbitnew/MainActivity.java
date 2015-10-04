@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -37,6 +38,9 @@ import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int MEDIA_TYPE_IMAGE = 4;
     public static final int MEDIA_TYPE_VIDEO = 5;
 
+    public static final int FILE_SIZE_LIMIT = 1024 * 1024 * 10; //10 MB
+
     protected Uri mMediaUri;
 
     private EditText mUsername;
@@ -65,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
             switch (which)
             {
-                case 0:
+                case 0: //Take Photo
                     Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                     mMediaUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
@@ -79,17 +85,11 @@ public class MainActivity extends AppCompatActivity {
                     {
 
                         takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mMediaUri);
-                        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+
+                        if (dontHavePermission(Manifest.permission.CAMERA))
                         {
 
-                            // Verifica se já mostramos o alerta e o usuário negou na 1ª vez.
-                            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
-                                // Caso o usuário tenha negado a permissão anteriormente, e não tenha marcado o check "nunca mais mostre este alerta"
-                                // Podemos mostrar um alerta explicando para o usuário porque a permissão é importante.
-                            } else {
-                                // Solicita a permissão
-                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},0);
-                            }
+                            askForPermission(Manifest.permission.CAMERA);
 
                         }
                         else
@@ -100,16 +100,98 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                         break;
-                case 1:
+                case 1: //Take Video
+                    Intent videoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                    mMediaUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+
+                    if(mMediaUri == null)
+                    {
+                        Toast.makeText(MainActivity.this, R.string.external_storage_unavailable, Toast.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                        videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mMediaUri);
+                        videoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10);
+                        videoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+
+
+                        if (dontHavePermission(Manifest.permission.CAMERA))
+                        {
+
+                            askForPermission(Manifest.permission.CAMERA);
+
+                        }
+                        else
+                        {
+
+                            startActivityForResult(videoIntent, TAKE_VIDEO_REQUEST);
+
+                        }
+
+                    }
+
                     break;
                 case 2:
+
+                    Intent choosePhotoIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    choosePhotoIntent.setType("image/*");
+                    startActivityForResult(choosePhotoIntent, PICK_PHOTO_REQUEST);
                     break;
                 case 3:
+
+                    Intent chooseVideoIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    chooseVideoIntent.setType("video/*");
+                    Toast.makeText(MainActivity.this, R.string.video_too_large, Toast.LENGTH_LONG).show();
+                    startActivityForResult(chooseVideoIntent, PICK_VIDEO_REQUEST);
                     break;
             }
 
         }
     };
+
+    private boolean dontHavePermission(String permission)
+    {
+
+
+        if(ContextCompat.checkSelfPermission(MainActivity.this, permission) != PackageManager.PERMISSION_GRANTED)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+
+    private void askForPermission(String permission)
+    {
+        // Verifica se já mostramos o alerta e o usuário negou na 1ª vez.
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission)) {
+            // Caso o usuário tenha negado a permissão anteriormente, e não tenha marcado o check "nunca mais mostre este alerta"
+            // Podemos mostrar um alerta explicando para o usuário porque a permissão é importante.
+            alertUser("Permissão necessária", "É necessária permissão de câmera para que este aplicativo possa funcionar corretamente");
+
+        } else {
+            // Solicita a permissão
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission},0);
+        }
+
+    }
+
+
+
+    private void alertUser(String title, String message)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setTitle(title)
+                .setPositiveButton(R.string.ok, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
 
     //método pra salvar o arquivo de mídia baseado na URI gerada
     private Uri getOutputMediaFileUri(int mediaType)
@@ -130,16 +212,9 @@ public class MainActivity extends AppCompatActivity {
             {
 
                 // Se não possui permissão
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                if (dontHavePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE))
                 {
-                    // Verifica se já mostramos o alerta e o usuário negou na 1ª vez.
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        // Caso o usuário tenha negado a permissão anteriormente, e não tenha marcado o check "nunca mais mostre este alerta"
-                        // Podemos mostrar um alerta explicando para o usuário porque a permissão é importante.
-                    } else {
-                        // Solicita a permissão
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
-                    }
+                    askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 }
                 else
                 {
@@ -293,19 +368,97 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-/*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-*/
+
 
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK)
+        {
+
+            if(requestCode == PICK_PHOTO_REQUEST || requestCode == PICK_VIDEO_REQUEST)
+            {
+                if(data == null)
+                {
+                    Toast.makeText(MainActivity.this, R.string.captura_cancelada, Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    mMediaUri = data.getData();
+                }
+
+                Log.i(TAG, "Media URI: " + mMediaUri);
+
+                if(requestCode == PICK_VIDEO_REQUEST)
+                {
+                    // make sure the file is less than 10 MB
+                    int fileSize = 0;
+                    InputStream inputStream = null;
+
+                    try
+                    {
+
+                        inputStream = getContentResolver().openInputStream(mMediaUri);
+                        fileSize = inputStream.available();
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        Toast.makeText(this, R.string.error_selected_file, Toast.LENGTH_LONG);
+                        e.printStackTrace();
+                        return;
+                    }
+                    catch (IOException e)
+                    {
+                        Toast.makeText(this, R.string.error_selected_file, Toast.LENGTH_LONG);
+                        e.printStackTrace();
+                        return;
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            inputStream.close();
+                        }
+                        catch (IOException e)
+                        {
+                            /* Intentionally blank */
+
+                        }
+                    }
+
+
+                    if(fileSize >= FILE_SIZE_LIMIT)
+                    {
+                        Toast.makeText(this, R.string.file_too_large, Toast.LENGTH_LONG).show();
+                        //Retorna pra atividade
+                        return;
+                    }
+
+                }
+
+            }
+            else
+            {
+
+                //add to the gallery
+                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                mediaScanIntent.setData(mMediaUri);
+                sendBroadcast(mediaScanIntent);
+            }
+
+        }
+        else if(resultCode == RESULT_CANCELED)
+        {
+            Toast.makeText(this, R.string.error_msg, Toast.LENGTH_LONG).show();
+        }
+
+    }
 
     private void navigateToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);

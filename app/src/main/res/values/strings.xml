@@ -20,6 +20,11 @@
     <string name="title_activity_edit_friends">Edit Friends</string>
     <string name="action_camera_text">Camera</string>
     <string name="external_storage_unavailable">There was a problem accessing your device\'s external storage.</string>
+    <string name="error_msg">Picture was canceled</string>
+    <string name="captura_cancelada">Captura da foto cancelada</string>
+    <string name="video_too_large">The selected video must be less than 10 MB</string>
+    <string name="error_selected_file">There was an error with the selected file</string>
+    <string name="file_too_large">The selected file is too large, select a new file</string>
     <string-array name="camera_choices">
         <item>Take Picture</item>
         <item>Take Video</item>
