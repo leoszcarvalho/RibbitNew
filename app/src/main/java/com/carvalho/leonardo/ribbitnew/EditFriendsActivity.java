@@ -110,7 +110,6 @@ public class EditFriendsActivity extends AppCompatActivity {
                     mLista.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
 
-                    //sasaas
                     addFriendsChecks();
 
                     mLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {

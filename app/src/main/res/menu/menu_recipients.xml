@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
+
+      <item android:id="@+id/action_camera"
+            android:title="@string/action_camera_text"
+            android:orderInCategory="100"
+            android:icon="@mipmap/ic_action_camera"
+            app:showAsAction="always"/>
+
+      <item android:id="@+id/action_send"
+            android:title="@string/action_send"
+            android:orderInCategory="100"
+            android:visible="false"
+            android:icon="@mipmap/ic_action_send_now"
+            app:showAsAction="always"/>
+
+      <item android:id="@+id/action_friends_edit_menu"
+            android:title="@string/action_friends_edit_menu_text"
+            android:orderInCategory="100"
+            app:showAsAction="never"/>
+
+
+      <item android:id="@+id/action_logout"
+            android:title="@string/action_logout_text"
+            android:orderInCategory="100"
+            app:showAsAction="never"/>
+
+</menu>
