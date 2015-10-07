@@ -38,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setLogo(R.mipmap.ic_launcher);
+        //toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
 /*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
