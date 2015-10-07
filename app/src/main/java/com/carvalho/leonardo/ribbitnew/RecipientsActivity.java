@@ -20,14 +20,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,9 +170,28 @@ public class RecipientsActivity extends AppCompatActivity
         message.put(ParseConstants.KEY_RECIPIENTS_IDS, getRecipientIds());
         message.put(ParseConstants.KEY_FILE_TYPE, mFileType);
 
-        byte[] fileBytes;
+        byte[] fileBytes = FileHelper.getByteArrayFromFile(this, mMediaUri);
 
-        return message;
+        if(fileBytes == null)
+        {
+            return null;
+        }
+        else
+        {
+            if(mFileType.equals(ParseConstants.TYPE_IMAGE))
+            {
+                fileBytes = FileHelper.reduceImageForUpload(fileBytes);
+
+            }
+
+            String fileName = FileHelper.getFileName(this, mMediaUri, mFileType);
+            ParseFile file = new ParseFile(fileName, fileBytes);
+            message.put(ParseConstants.KEY_FILE, file);
+
+            return message;
+
+        }
+
     }
 
     protected ArrayList<String> getRecipientIds() {
@@ -238,14 +260,53 @@ public class RecipientsActivity extends AppCompatActivity
                 break;
             case R.id.action_send:
                 ParseObject message = createMessage();
-                //send(message);
+
+                if(message == null)
+                {
+                    alertUser("File error", "There was an error with the selected file. Please select a different file");
+                }
+                else
+                {
+                    send(message);
+                    finish();
+                }
+
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void alertUser(String title, String message)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setTitle(title)
+                .setPositiveButton(R.string.ok, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
+    }
+
+    protected void send(ParseObject message)
+    {
+        message.saveInBackground(new SaveCallback()
+        {
+            @Override
+            public void done(ParseException e)
+            {
+                if(e == null)
+                {
+                    new ToastGen(RecipientsActivity.this, "Message sent!");
+                }
+                else
+                {
+                    alertUser("Sending Error", "There was an error sending your message, please try again");
+                }
+
+            }
+        });
+    }
 
 
 }
