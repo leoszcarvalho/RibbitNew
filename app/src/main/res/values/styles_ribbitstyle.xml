@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.Ribbitstyle" parent="@android:style/Theme.Holo.Light" tools:targetApi="honeycomb">
+        <item name="android:actionBarItemBackground" tools:targetApi="ice_cream_sandwich">@drawable/selectable_background_ribbitstyle</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Ribbitstyle</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Ribbitstyle</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Ribbitstyle</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Ribbitstyle</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Ribbitstyle</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_ribbitstyle</item>
+        <item name="android:actionModeSplitBackground" tools:targetApi="ice_cream_sandwich">@drawable/cab_background_bottom_ribbitstyle</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Ribbitstyle</item>
+        <item name="android:listViewStyle">@style/Theme.Ribbitstyle.LightPurpleBackground</item>
+        
+        
+    </style>
+
+    <style name="Theme.Ribbitstyle.LightPurpleBackground">
+        <item name="android:background">@color/light_purple_background</item>
+    </style>
+
+    <style name="ActionBar.Solid.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid" tools:targetApi="ice_cream_sandwich">
+        <item name="android:background">@drawable/ab_solid_ribbitstyle</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_ribbitstyle</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_ribbitstyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Ribbitstyle</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ActionBar" tools:targetApi="honeycomb">
+        <item name="android:background">@drawable/ab_transparent_ribbitstyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Ribbitstyle</item>
+    </style>
+
+    <style name="PopupMenu.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ListPopupWindow" tools:targetApi="honeycomb">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_ribbitstyle</item>	
+    </style>
+
+    <style name="DropDownListView.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ListView.DropDown" tools:targetApi="honeycomb">
+        <item name="android:listSelector">@drawable/selectable_background_ribbitstyle</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView" tools:targetApi="honeycomb_mr2">
+        <item name="android:background">@drawable/tab_indicator_ab_ribbitstyle</item>
+    </style>
+
+    <style name="DropDownNav.Ribbitstyle" parent="@android:style/Widget.Holo.Light.Spinner" tools:targetApi="honeycomb">
+        <item name="android:background">@drawable/spinner_background_ab_ribbitstyle</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_ribbitstyle</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_ribbitstyle</item>
+    </style>
+    
+    <style name="ProgressBar.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal" tools:targetApi="honeycomb">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_ribbitstyle</item>
+    </style>
+    
+    <style name="ActionButton.CloseMode.Ribbitstyle" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode" tools:targetApi="honeycomb">
+        <item name="android:background">@drawable/btn_cab_done_ribbitstyle</item>
+    </style>
+
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Ribbitstyle.Widget" parent="@android:style/Theme.Holo" tools:targetApi="honeycomb">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Ribbitstyle</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Ribbitstyle</item>
+    </style>
+
+</resources>

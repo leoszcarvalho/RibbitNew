@@ -23,10 +23,12 @@ public class RibbidApplication extends Application
         Parse.initialize(this, "T1ugya2I2huxR6zwoBLKEbndhl1nJcL3buWQylGi", "S2HY4XXohFqfpiWTMwhiZ6KpKxF5UKAT6KcebUAF");
 
 
+        /*Testar funcionamento do Parse
         ParseObject testObject = new ParseObject("TestObject");
+
         testObject.put("foo", "bar");
         testObject.saveInBackground();
-
+         */
     }
 
 }
