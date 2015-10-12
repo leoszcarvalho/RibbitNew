@@ -1,7 +1,10 @@
 package com.carvalho.leonardo.ribbitnew.ui;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,10 +15,14 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.carvalho.leonardo.ribbitnew.adapters.UserAdapter;
 import com.carvalho.leonardo.ribbitnew.utils.ParseConstants;
 import com.carvalho.leonardo.ribbitnew.R;
 import com.parse.FindCallback;
@@ -36,9 +43,11 @@ public class EditFriendsActivity extends AppCompatActivity {
     protected List<ParseUser> mUsers;
     protected ParseRelation<ParseUser> mFriendsRelation;
     protected ParseUser mCurrentUser;
+    protected GridView mGridView;
 
     private ListView mLista;
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +61,47 @@ public class EditFriendsActivity extends AppCompatActivity {
         toolbar.setLogo(R.mipmap.ic_launcher);
         setSupportActionBar(toolbar);
 
+        mGridView = (GridView) findViewById(R.id.friendsGrid);
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
+        mGridView.setOnItemClickListener(mOnItemClickListener);
 
+
+        TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+
+        mGridView.setEmptyView(emptyTextView);
 
     }
+
+    private AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+        {
+            ImageView checkImageView = (ImageView) view.findViewById(R.id.checkImageView);
+
+            if(mGridView.isItemChecked(position))
+            {
+                mFriendsRelation.add(mUsers.get(position));
+                checkImageView.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                mFriendsRelation.remove(mUsers.get(position));
+                checkImageView.setVisibility(View.INVISIBLE);
+            }
+
+            mCurrentUser.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if(e != null)
+                    {
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+            });
+
+        }
+    };
 
 
     @Override
@@ -96,23 +143,22 @@ public class EditFriendsActivity extends AppCompatActivity {
                         i++;
                     }
 
-                    //guarda os resultados dentro de um array adapter
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            EditFriendsActivity.this,
-                            android.R.layout.simple_list_item_checked,
-                            usernames);
+                    if(mGridView.getAdapter() == null)
+                    {
 
-                    //captura a lista pra fazer a população através do adapter e setar o onclick dos itens
-                    mLista = (ListView) findViewById(R.id.lista);
+                        UserAdapter adapter = new UserAdapter(EditFriendsActivity.this, mUsers);
+                        mGridView.setAdapter(adapter);
 
-                    mLista.setAdapter(adapter);
-
-                    mLista.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+                    }
+                    else
+                    {
+                        ((UserAdapter) mGridView.getAdapter()).refill(mUsers);
+                    }
 
 
                     addFriendsChecks();
 
-                    mLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                   /* mLista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -164,7 +210,7 @@ public class EditFriendsActivity extends AppCompatActivity {
 
                         }
 
-                    });
+                    });*/
 
 
                 } else {
@@ -192,6 +238,7 @@ public class EditFriendsActivity extends AppCompatActivity {
     {
 
         mFriendsRelation.getQuery().findInBackground(new FindCallback<ParseUser>() {
+            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void done(List<ParseUser> list, ParseException e) {
                 if(e == null)
@@ -205,7 +252,7 @@ public class EditFriendsActivity extends AppCompatActivity {
                         {
                             if(friend.getObjectId().equals(user.getObjectId()))
                             {
-                                mLista.setItemChecked(i, true);
+                                mGridView.setItemChecked(i, true);
                             }
                         }
 

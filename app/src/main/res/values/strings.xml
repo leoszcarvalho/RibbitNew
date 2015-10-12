@@ -38,5 +38,7 @@
     <string name="aplicativo">Ribbit</string>
     <string name="sign_in">Sign In</string>
     <string name="cancel">Cancel</string>
+    <string name="user_avatar">User Avatar</string>
+    <string name="user_checkmark">User checkmark</string>
 
 </resources>

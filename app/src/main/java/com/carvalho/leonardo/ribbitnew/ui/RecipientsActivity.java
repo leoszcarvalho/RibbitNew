@@ -1,5 +1,6 @@
 package com.carvalho.leonardo.ribbitnew.ui;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,10 +15,13 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.carvalho.leonardo.ribbitnew.adapters.UserAdapter;
 import com.carvalho.leonardo.ribbitnew.utils.FileHelper;
 import com.carvalho.leonardo.ribbitnew.utils.ParseConstants;
 import com.carvalho.leonardo.ribbitnew.R;
@@ -45,12 +49,14 @@ public class RecipientsActivity extends AppCompatActivity
     protected MenuItem mSendMenuItem;
     protected Uri mMediaUri;
     protected String mFileType;
+    protected GridView mGridView;
 
     private ProgressBar mProgressBar;
     private TextView mEmptyText;
     private ListView mlistaView;
     private ListView itensChecked;
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,16 +66,49 @@ public class RecipientsActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mEmptyText = (TextView) findViewById(R.id.empty);
 
-        mEmptyText.setVisibility(View.INVISIBLE);
+        mGridView = (GridView) findViewById(R.id.friendsGrid);
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
+        mGridView.setOnItemClickListener(mOnItemClickListener);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mMediaUri = getIntent().getData();
         mFileType = getIntent().getExtras().getString(ParseConstants.KEY_FILE_TYPE);
 
+        TextView emptyTextView = (TextView) findViewById(android.R.id.empty);
+
+        mGridView.setEmptyView(emptyTextView);
+
     }
+
+    private AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+        {
+            ImageView checkImageView = (ImageView) view.findViewById(R.id.checkImageView);
+
+            if(mGridView.getCheckedItemCount() > 0)
+            {
+                mSendMenuItem.setVisible(true);
+            }
+            else
+            {
+                mSendMenuItem.setVisible(false);
+            }
+
+            if(mGridView.isItemChecked(position))
+            {
+                checkImageView.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                checkImageView.setVisibility(View.INVISIBLE);
+            }
+
+        }
+    };
 
 
     @Override
@@ -101,45 +140,20 @@ public class RecipientsActivity extends AppCompatActivity
                     }
 
                     //guarda os resultados dentro de um array adapter
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            RecipientsActivity.this,
-                            android.R.layout.simple_list_item_checked,
-                            usernames);
+                    if(mGridView.getAdapter() == null)
+                    {
 
-                    Log.d("Array_tamanho", String.valueOf(adapter.getCount()));
+                        UserAdapter adapter = new UserAdapter(RecipientsActivity.this, mFriends);
+                        mGridView.setAdapter(adapter);
 
-                    int totalRegisters = adapter.getCount();
-
-                    if (totalRegisters == 0) {
-                        mEmptyText.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        ((UserAdapter) mGridView.getAdapter()).refill(mFriends);
                     }
 
-                    mlistaView = (ListView) findViewById(R.id.listaView);
-
-                    //captura a lista pra fazer a população através do adapter e setar o onclick dos itens
-                    //mLista = (ListView) findViewById(R.id.lista);
-
-                    mlistaView.setAdapter(adapter);
-
-                    mlistaView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-
-                    mlistaView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                            if (getItensCount(mlistaView) > 0) {
-                                mSendMenuItem.setVisible(true);
-                            } else {
-                                mSendMenuItem.setVisible(false);
-                            }
-
-                        }
-
-
-
-                    });
 
 
                 } else {
@@ -194,11 +208,12 @@ public class RecipientsActivity extends AppCompatActivity
 
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     protected ArrayList<String> getRecipientIds() {
         ArrayList<String> recipientIds = new ArrayList<String>();
 
-        for (int i = 0; i < mlistaView.getCount(); i++) {
-            if (mlistaView.isItemChecked(i)) {
+        for (int i = 0; i < mGridView.getCount(); i++) {
+            if (mGridView.isItemChecked(i)) {
                 recipientIds.add(mFriends.get(i).getObjectId());
             }
         }

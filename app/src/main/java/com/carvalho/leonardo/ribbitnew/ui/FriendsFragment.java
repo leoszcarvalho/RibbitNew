@@ -2,14 +2,16 @@ package com.carvalho.leonardo.ribbitnew.ui;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.carvalho.leonardo.ribbitnew.adapters.UserAdapter;
 import com.carvalho.leonardo.ribbitnew.utils.ParseConstants;
 import com.carvalho.leonardo.ribbitnew.R;
 import com.parse.FindCallback;
@@ -23,7 +25,7 @@ import java.util.List;
 /**
  * Created by Leonardo on 02/10/2015.
  */
-public class FriendsFragment extends ListFragment
+public class FriendsFragment extends Fragment
 {
 
     public static final String TAG = FriendsFragment.class.getSimpleName();
@@ -31,6 +33,7 @@ public class FriendsFragment extends ListFragment
     protected List<ParseUser> mFriends;
     protected ParseRelation<ParseUser> mFriendsRelation;
     protected ParseUser mCurrentUser;
+    protected GridView mGridView;
 
     private ProgressBar mProgressBar;
 
@@ -39,7 +42,14 @@ public class FriendsFragment extends ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_friends, container, false);
+        View rootView = inflater.inflate(R.layout.user_grid, container, false);
+
+        mGridView = (GridView) rootView.findViewById(R.id.friendsGrid);
+
+
+        TextView emptyTextView = (TextView) rootView.findViewById(android.R.id.empty);
+
+        mGridView.setEmptyView(emptyTextView);
 
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
@@ -76,24 +86,24 @@ public class FriendsFragment extends ListFragment
                         i++;
                     }
 
-                    //guarda os resultados dentro de um array adapter
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                            getListView().getContext(),
-                            android.R.layout.simple_list_item_1,
-                            usernames);
+                    if(mGridView.getAdapter() == null)
+                    {
 
-                    //captura a lista pra fazer a população através do adapter e setar o onclick dos itens
-                    //mLista = (ListView) findViewById(R.id.lista);
+                        UserAdapter adapter = new UserAdapter(getActivity(), mFriends);
+                        mGridView.setAdapter(adapter);
 
-                    setListAdapter(adapter);
-
+                    }
+                    else
+                    {
+                        ((UserAdapter) mGridView.getAdapter()).refill(mFriends);
+                    }
 
                 }
                 else
                 {
                     Log.e(TAG, e.getMessage());
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getListView().getContext());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage(e.getMessage())
                             .setTitle("Expection Error")
                             .setPositiveButton(R.string.ok, null);

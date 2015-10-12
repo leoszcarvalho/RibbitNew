@@ -83,9 +83,6 @@ public class InboxFragment extends ListFragment
                     //We found messages
                     mMessages = messages;
 
-                    //Setei pra remover os dividers na fragment_inbox.xml
-                    //getListView().setDividerHeight(0);
-                    //getListView().setDivider(null);
 
                     String[] usernames = new String[mMessages.size()];
                     int i = 0;
