@@ -29,7 +29,9 @@ import com.carvalho.leonardo.ribbitnew.utils.ToastGen;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
@@ -305,17 +307,13 @@ public class RecipientsActivity extends AppCompatActivity
 
     protected void send(ParseObject message)
     {
-        message.saveInBackground(new SaveCallback()
-        {
+        message.saveInBackground(new SaveCallback() {
             @Override
-            public void done(ParseException e)
-            {
-                if(e == null)
-                {
+            public void done(ParseException e) {
+                if (e == null) {
                     new ToastGen(RecipientsActivity.this, "Message sent!");
-                }
-                else
-                {
+                    sendPushNotifications();
+                } else {
                     alertUser("Sending Error", "There was an error sending your message, please try again");
                 }
 
@@ -323,5 +321,18 @@ public class RecipientsActivity extends AppCompatActivity
         });
     }
 
+    protected void sendPushNotifications()
+    {
+        ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+        query.whereContainedIn(ParseConstants.KEY_USER_ID, getRecipientIds());
+
+        //send push notifications
+        ParsePush push = new ParsePush();
+        push.setQuery(query);
+        push.setMessage(getString(R.string.user_push_message,
+                    ParseUser.getCurrentUser().getUsername()));
+        push.sendInBackground();
+
+    }
 
 }

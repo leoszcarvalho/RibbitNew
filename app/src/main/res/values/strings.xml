@@ -40,5 +40,6 @@
     <string name="cancel">Cancel</string>
     <string name="user_avatar">User Avatar</string>
     <string name="user_checkmark">User checkmark</string>
+    <string name="user_push_message">You have a new Ribbit message from %s</string>
 
 </resources>

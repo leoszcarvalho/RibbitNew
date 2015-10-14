@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.carvalho.leonardo.ribbitnew.R;
+import com.carvalho.leonardo.ribbitnew.RibbidApplication;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -99,6 +100,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             if (e == null)
                             {
+
+                                RibbidApplication.updateParseInstallation(user);
 
                                 // Hooray! The user is logged in.
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
